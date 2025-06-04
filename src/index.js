@@ -52,7 +52,7 @@ ${data.privateNote || '(nenhuma)'}
 `;
 
       const emailPayload = {
-        from: "App AtipicALI <app@atipicali.com>",
+        from: "App AtipicALI <new@places.atipicali.com>",
         to: "mail.for.luis.alves@gmail.com",
         subject: `Nova sugestão: ${data.name}`,
         text: emailText,
