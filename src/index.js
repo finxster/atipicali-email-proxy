@@ -10,24 +10,30 @@
 
 export default {
   async fetch(request, env, ctx) {
-    console.log("[worker] Requisição recebida:", request.method);
+    // CORS padrão
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*", // ou especifique seu domínio
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+
+    if (request.method === "OPTIONS") {
+      // Pré-flight request
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
 
     if (request.method !== "POST") {
-      console.log("[worker] Método inválido");
-      return new Response("Método não permitido", { status: 405 });
+      return new Response("Método não permitido", {
+        status: 405,
+        headers: corsHeaders,
+      });
     }
 
     try {
       const data = await request.json();
-      console.log("[worker] JSON recebido:", JSON.stringify(data));
-
-      const requiredFields = ['name', 'address', 'rating'];
-      for (const field of requiredFields) {
-        if (!data[field]) {
-          console.log(`[worker] Campo ausente: ${field}`);
-          return new Response(`Campo obrigatório ausente: ${field}`, { status: 400 });
-        }
-      }
 
       const emailText = `
 📍 Novo lugar sugerido no app:
@@ -46,13 +52,11 @@ ${data.privateNote || '(nenhuma)'}
 `;
 
       const emailPayload = {
-        from: "App Atipicali <app@atipicali.com>",
+        from: "App AtipicALI <app@atipicali.com>",
         to: "mail.for.luis.alves@gmail.com",
-        subject: `Nova sugestão de lugar: ${data.name}`,
+        subject: `Nova sugestão: ${data.name}`,
         text: emailText,
       };
-
-      console.log("[worker] Payload do email:", JSON.stringify(emailPayload));
 
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -63,22 +67,27 @@ ${data.privateNote || '(nenhuma)'}
         body: JSON.stringify(emailPayload),
       });
 
-      console.log("[worker] Resposta da API Resend:", res.status);
-
       if (!res.ok) {
         const err = await res.text();
-        console.log("[worker] Erro ao enviar email:", err);
-        return new Response(`Erro ao enviar email: ${err}`, { status: 500 });
+        return new Response(`Erro ao enviar email: ${err}`, {
+          status: 500,
+          headers: corsHeaders,
+        });
       }
 
-      console.log("[worker] Email enviado com sucesso!");
-      return new Response("Email enviado com sucesso!", { status: 200 });
+      return new Response("Email enviado com sucesso!", {
+        status: 200,
+        headers: corsHeaders,
+      });
 
     } catch (err) {
-      console.log("[worker] Erro no bloco try/catch:", err);
-      return new Response(`Erro no Worker: ${err}`, { status: 500 });
+      return new Response(`Erro no Worker: ${err}`, {
+        status: 500,
+        headers: corsHeaders,
+      });
     }
   },
 };
+
 
 
