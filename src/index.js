@@ -69,7 +69,7 @@ ${data.privateNote || '(nenhuma)'}
 
       if (!res.ok) {
         const err = await res.text();
-        return new Response(`Erro ao enviar email: ${err}`, {
+        return new Response(`${err}`, {
           status: 500,
           headers: corsHeaders,
         });
