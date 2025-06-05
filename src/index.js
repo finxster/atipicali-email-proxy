@@ -42,6 +42,7 @@ export default {
 • Endereço: ${data.address}
 • Avaliação: ${data.rating} estrelas
 • Comentário: ${data.comment || '(nenhum)'}
+• Imagem: ${data.imageUuid || '(nenhum)'}
 
 👤 Contato:
 • Nome: ${data.contactName || '(nenhum)'}
